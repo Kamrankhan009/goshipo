@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Split-Screen Form</title>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<style>
+  body {
+    
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: Courier,monospace;
+    background-color: #fef2ff69;
+  }
+  
+  .top-row {
+
+    background-color: #fef2ff69;
+    color: #000000;
+    padding: 50px 0;
+    text-align: center;
+  }
+  
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .left-side {
+    flex: 4;
+    /* margin-left: 10%;s */
+    padding-left: 100px;
+    background-color: #fef2ff69;
+    display: flex;
+    /* text-align: center ; */
+    flex-direction: column;
+    /* justify-content: center; */
+    /* align-items: center; */
+  }
+  
+  .right-side {
+    flex: 5;
+    padding: 30px;
+    background-color: #fef2ff69;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-container {
+    width: 400px;
+    margin: 0 auto;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .form-button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .form-button {
+    width: 150px;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .form-button.active {
+    background-color: #0056b3;
+  }
+
+  .zip-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+  }
+  
+  .arrow-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-top: 20px;
+    height: 100%;
+  }
+
+   /* Additional style for invalid input */
+   .invalid-input {
+    border: 1px solid red !important;
+  }
+  
+  /* Error message style */
+  .error-message {
+    display: none;
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+
+  .carrier-info {
+    /* text-align: center; */
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #ffffff;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .carrier-image {
+    max-width: 100px;
+    margin-bottom: 10px;
+  }
+  
+  .carrier-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .carrier-price {
+    font-size: 16px;
+    color: #007bff;
+  }
+  @media (max-width: 768px) {
+    .flex-row {
+      flex-direction: column;
+      align-items: center;
+    }
+    .left-side {
+      margin: 0;
+      padding: 0 20px;
+    }
+    .right-side {
+      margin: 0;
+      padding: 20px;
+    }
+  }
+</style>
+
+
+
+<script>
+  function toggleForm(formId) {
+    const forms = document.querySelectorAll('.form-container');
+    forms.forEach(form => {
+      form.style.display = 'none';
+    });
+    document.getElementById(formId).style.display = 'block';
+
+    const buttons = document.querySelectorAll('.form-button');
+    buttons.forEach(button => {
+      button.classList.remove('active');
+    });
+    document.querySelector(`.${formId}-button`).classList.add('active');
+  }
+
+  function updateFieldsVisibility() {
+    const packageType = document.getElementById("packageType").value;
+    const heightField = document.getElementById("heightField");
+    const unitField = document.getElementById("unitField");
+
+    if (packageType === "polymailer") {
+      heightField.style.display = "none";
+    } else {
+      heightField.style.display = "block";
+    }
+  }
+
+  window.onload = function () {
+    toggleForm('form1');
+    updateFieldsVisibility();
+  };
+
+
+  
+  function validateZipCode(zipInputId, errorId) {
+    const zipInput = document.getElementById(zipInputId);
+    const errorElement = document.getElementById(errorId);
+    const zipPattern = /^\d{5}$/;
+
+    if (!zipPattern.test(zipInput.value)) {
+      zipInput.classList.add('invalid-input');
+      errorElement.style.display = 'block';
+      return false;
+    } else {
+      zipInput.classList.remove('invalid-input');
+      errorElement.style.display = 'none';
+      return true;
+    }
+  }
+
+  function initZipCodeValidation() {
+    const zipInput = document.getElementById('addressToZip');
+    const errorElement = document.getElementById('zipError');
+    
+    zipInput.addEventListener('input', () => {
+      validateZipCode('addressToZip', 'zipError');
+    });
+  }
+
+  function initZipCodeValidation2() {
+    const zipInput = document.getElementById('addressToZip2');
+    const errorElement = document.getElementById('zipError');
+    
+    zipInput.addEventListener('input', () => {
+      validateZipCode('addressToZip2', 'zipError2');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initZipCodeValidation);
+  document.addEventListener('DOMContentLoaded', initZipCodeValidation2);
+</script>
+
+
+
+
+</head>
+<body>
+
+
+
+  <div class="top-row">
+    <h1>Shipping rate calculator</h1>
+    <br>
+    <p>Get the absolute best shipping rates with BigShipDirect. Calculate how much you'll save <br>with our shipping calculator</p>
+  </div>
+  
+
+  <div class="flex-row">  
+  <div class="left-side">
+    <p>Available Shipment</p>
+    {% for rate in rate %}
+
+    <div class="carrier-info">
+      <img src="{{rate['provider_image_200']}}" alt="Carrier Logo" class="carrier-image">
+      
+      <div class="carrier-name">{{rate["servicelevel"]["name"]}}</div>
+      <div class="carrier-price">${{rate['amount']}}</div>
+      <div>{{rate["duration_terms"]}}</div>
+    </div>
+    {%endfor%}
+    <br><br><br>
+
+
+    
+  </div>
+  <div class="right-side">
+ 
+    <div id="form1" class="form-container">
+      <h2 style="background-color: rgb(138, 248, 211);">Custom Shippo's Rates</h2>
+      
+      
+
+      <form method="post" action="calculate">
+
+
+        <div class="form-row align-items-center">
+          <div class="col-md-12">
+            <label for=""><h3>Address From</h3></label><br>
+            <label for="address">Street</label>
+            <input type="text" id="address" name="address" class="form-control" placeholder="5678 Elm Street etc">
+          </div>
+        </div>
+
+
+        <div class="form-row align-items-center">
+          <div class="col-md-12">
+
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Full name">
+          </div>
+        </div>
+
+
+        <div class="form-row align-items-center">
+          <div class="col-md-3">
+            <label for="addressToZip" class="form-label">Zip:</label>
+            <div class="input-group">
+              <input type="text" id="addressToZip" name="addressToZip" class="form-control" placeholder="Zip" required>
+            </div>
+          </div>
+
+
+          <div class="col-md-3">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" class="form-control" placeholder="city">
+          </div>
+
+          
+          <div class="col-md-3">
+            <label for="state">state</label>
+            <input type="text" id="state" name="state" class="form-control" placeholder="state">
+          </div>
+
+
+          <div class="col-md-3">
+            <label for="country">country</label>
+            <input type="text" id="country" name="country" class="form-control" placeholder="country">
+          </div>
+       
+          <!-- <div class="col-md-5">
+            <label for="addressFrom" class="form-label">Address From:</label>
+            <input type="text" id="addressFrom" name="addressFrom" class="form-control" placeholder="Enter zip" required>
+          </div> -->
+
+        </div>
+        <div id="zipError" class="error-message">Invalid ZIP code</div>   
+        <br>
+        <div class="form-row align-items-center">
+          <div class="col-md-12">
+            <label for=""><h3>Address To</h3></label><br>
+            <label for="address">Street</label>
+            <input type="text" id="address" name="address2" class="form-control" placeholder="5678 Elm Street etc">
+          </div>
+        </div>
+
+
+        <div class="form-row align-items-center">
+          <div class="col-md-12">
+
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name2" class="form-control" placeholder="Full name">
+          </div>
+        </div>
+
+
+        <div class="form-row align-items-center">
+          <div class="col-md-3">
+            <label for="addressToZip" class="form-label">Zip:</label>
+            <div class="input-group">
+              <input type="text" id="addressToZip2" name="addressToZip2" class="form-control" placeholder="Zip" required>
+            </div>
+          </div>
+
+
+          <div class="col-md-3">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city2" class="form-control" placeholder="city">
+          </div>
+
+          
+          <div class="col-md-3">
+            <label for="state">state</label>
+            <input type="text" id="state" name="state2" class="form-control" placeholder="state">
+          </div>
+
+
+          <div class="col-md-3">
+            <label for="country">country</label>
+            <input type="text" id="country" name="country2" class="form-control" placeholder="country">
+          </div>
+       
+          <!-- <div class="col-md-5">
+            <label for="addressFrom" class="form-label">Address From:</label>
+            <input type="text" id="addressFrom" name="addressFrom" class="form-control" placeholder="Enter zip" required>
+          </div> -->
+
+        </div>
+        <div id="zipError2" class="error-message">Invalid ZIP code</div>   
+        <br>
+        <div class="form-row align-items-center">
+          <div class="col-md-12">
+            <label for="packageType" class="form-label">Package Type:</label>
+            <select id="packageType" name="packageType" class="form-control" onchange="updateFieldsVisibility();" required>
+              <option value="polymailer">Polymailer</option>
+              <option value="box">Box or Tube</option>
+            </select>
+          </div>
+        </div>
+        <br>
+      
+        <div class="form-row align-items-center" id="unitField">
+          <div class="col-md-4">
+            <label for="length" class="form-label">Length:</label>
+            <input type="text" id="length" name="length" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label for="width" class="form-label">Width:</label>
+            <input type="text" id="width" name="width" class="form-control" required>
+          </div>
+          
+          <div class="col-md-4" id="heightField" style="display: none;">
+            <label for="height" class="form-label">Height:</label>
+            <input type="text" id="height" name="height" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label for="unit" class="form-label">Unit:</label>
+            <select id="unit" name="unit" class="form-control" required>
+                <option value="cm">in</option>
+                <option value="cm">cm</option>
+
+            </select>
+          </div>
+        </div>
+
+        <br>
+        <div class="form-row align-items-center">
+            <div class="col-md-8">
+                <label for="weight" class="form-label">package weight:</label>
+                <input type="text" id="weight" name="weight" class="form-control" required>
+              </div>
+
+
+              <div class="col-md-4">
+                <label for="weight-unit" class="form-label">Unit:</label>
+                <select id="weight-unit" name="weight-unit" class="form-control" required>
+                    <option value="lb">lbs</option>
+                    <option value="oz">oz</option>
+    
+                </select>
+              </div>
+
+        </div>
+
+        <button type="submit" class="btn mt-3" style="color: black; background-color: aquamarine; width: 100%;">See Shipping rates</button>
+      </form>
+
+    </div>
+  
+  </div>
+  </div>
+</body>
+</html>
