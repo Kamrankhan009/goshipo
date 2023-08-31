@@ -1,34 +1,55 @@
 from flask import Flask, render_template, request
 import requests
-# api_key= "shippo_live_d31bf486ebbff553e9d4b9dac8013b30c9bfc33a"
-# api_key = "shippo_test_4be9534dc1f3440b8d3943690c81882757e696b8"
-api_key = "shippo_live_38282379a39fc7fc8128ab78e05b09afa9922cfd"
-import shippo
 
+
+import shippo
+# from flask_ngrok import run_with_ngrok
+# api_key= "shippo_live_d31bf486ebbff553e9d4b9dac8013b30c9bfc33a"
+
+# mine api key
+api_key = "shippo_live_fc161f2fafa5b6b1c181ef4ca9ee861cf2b73f31"
+
+#client api key
+# api_key = "shippo_live_05c8397eb96c1618c677ea52c74cd3f15eafadbf"
 # shippo.api_key = api_key
 shippo.config.api_key = api_key
+# # shippo_live_d31bf486ebbff553e9d4b9dac8013b30c9bfc33a
+# # api_key= "shippo_live_d31bf486ebbff553e9d4b9dac8013b30c9bfc33a"
+# # api_key = "shippo_test_4be9534dc1f3440b8d3943690c81882757e696b8"
+# api_key = "shippo_live_fc161f2fafa5b6b1c181ef4ca9ee861cf2b73f31"
+
+from api1 import API1
+from api2 import API2
+from comparing_result import compare_and_choose
 
 
 app = Flask(__name__)
+# run_with_ngrok(app)
 
+
+
+def get_carrier_object_id():
+    headers = {
+    "Authorization": f"ShippoToken {shippo_api_key}",
+    "Content-Type": "application/json"
+    }
+
+    response = requests.get("https://api.goshippo.com/v1/carrier_accounts/", headers=headers)
+    if response.status_code == 200:
+        carrier_accounts = response.json()["results"]
+        if carrier_accounts:
+
+            valid_carrier_account_id = ""
+            for value in carrier_accounts:
+                if value['carrier'] == "fedex" and value['account_id'] == "279007477":
+                    valid_carrier_account_id = value['object_id']
+    
+    return valid_carrier_account_id
 
 
 @app.route("/calculate", methods = ['POST','GET'])
 def calculate():
     if request.method == "POST":
-        # [('addressToZip', '33234'), ('addressFrom', '12323'), ('packageType', 'polymailer'),
-        # ('length', '1'), ('width', '2'), ('height', ''), ('unit', 'cm'), ('weight', '22'), ('weight-unit', 'lbs')]
-        print(request.form)
-        abc =[('address', 'Banna Road'), ('name', 'testing'),
-           ('addressToZip', '14700'), ('city', 'Patiala'), ('state', 'abc'),
-             ('country', 'Pakistan'),
-              
-               ('address2', 'Banna Road'), ('name2', ''),
-               ('addressToZip2', '147003'), ('city2', 'Patiala'), ('state2', ''), 
-               ('country2', 'Pakistan'), ('packageType', 'polymailer'), 
-          ('length', '1'), ('width', '2'), ('height', ''), ('unit', 'cm'),
-            ('weight', '1'), ('weight-unit', 'lb')]
-        
 
         addressFrom = request.form.get('address')
         namefrom = request.form.get('name')
@@ -88,29 +109,30 @@ def calculate():
                 "mass_unit": weight_unit,
             }
 
-            shipment = shippo.Shipment.create(
-            address_from = address_from,
-            address_to = address_to,
-            parcels = [parcel]
-            )
 
-        
 
-            new_data = shippo.Shipment.get_rates(shipment.object_id, sync=True)
-            # currency_code = "USD"  # Set your desired currency code
-            # base_url = f"https://api.goshippo.com/rates/{shipment.object_id}"
-            # headers = {"Authorization": f"ShippoToken {api_key}"}
-            # response = requests.get(base_url, headers=headers)
-            print(new_data)
-            
-            rate_data = new_data['results']
-            # for rate in rate_data:
-            #     amount = rate["amount"]
-            #     currency = rate["currency_local"]
-            #     provider = rate["provider"]
-            #     image = rate['provider_image_200']
-            
-            return render_template("results.html", rate = rate_data)
+            headers = {
+                "Authorization": f"ShippoToken ",
+                "Content-Type": "application/json"
+            }
+
+            data = {
+                "address_from": address_from,
+                "address_to": address_to, 
+                "parcels":[parcel]
+            }
+      
+
+            fedex_rates, other_fedex_rates,rate_data = API1(address_from, address_to, parcel)
+            shippo.config.api_key = "shippo_live_05c8397eb96c1618c677ea52c74cd3f15eafadbf"
+            fedex_rates2, other_fedex_rates2,rate_data2 = API2(address_from, address_to, parcel)
+
+            data2 = compare_and_choose(other_fedex_rates, other_fedex_rates2)
+
+            # print("____________________________________________")
+            # print(data2)
+
+            return render_template("results.html", rate = rate_data, best_rate = fedex_rates, other_rate =data2)
         except Exception as e:
             print("hello world")
             print(e)
@@ -119,13 +141,7 @@ def calculate():
 
 
 
-# shipment = shippo.Shipment.create(
-#     address_from = address_from,
-#     address_to = address_to,
-#     parcels = [parcel]
-#     )
-
 
 
 if __name__ == "__main__":
-    app.run(debug = True)
+    app.run(debug=True)
