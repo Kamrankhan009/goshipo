@@ -7,10 +7,10 @@ import shippo
 # api_key= "shippo_live_d31bf486ebbff553e9d4b9dac8013b30c9bfc33a"
 
 # mine api key
-api_key = "shippo_live_fc161f2fafa5b6b1c181ef4ca9ee861cf2b73f31"
+# api_key = "shippo_live_fc161f2fafa5b6b1c181ef4ca9ee861cf2b73f31"
 
 #client api key
-# api_key = "shippo_live_05c8397eb96c1618c677ea52c74cd3f15eafadbf"
+api_key = "shippo_live_fdd23133f0d8522faf7cf1a37defa110528f8ddb"
 # shippo.api_key = api_key
 shippo.config.api_key = api_key
 # # shippo_live_d31bf486ebbff553e9d4b9dac8013b30c9bfc33a
@@ -51,6 +51,7 @@ def get_carrier_object_id():
 def calculate():
     if request.method == "POST":
 
+        print(request.form)
         addressFrom = request.form.get('address')
         namefrom = request.form.get('name')
         zipfrom = request.form.get('addressToZip')
@@ -86,7 +87,7 @@ def calculate():
             "city": cityfrom,#"San Francisco",
             "state": statefrom,#"CA",
             "zip":  zipfrom,#"94111",
-            "country":countryfrom, #"US",
+            "country":"USA", #"US",
             "phone": "",
             "email": "",
             }
@@ -96,7 +97,7 @@ def calculate():
                 "city": cityto,#"Los Angeles",
                 "state": stateto,#"CA",
                 "zip": zipto,#"90001",
-                "country": countryto, #"US",
+                "country": "USA", #"US",
                 "phone": "",
                 "email": "",
             }
@@ -124,20 +125,20 @@ def calculate():
       
 
             fedex_rates, other_fedex_rates,rate_data = API1(address_from, address_to, parcel)
+
+            
             shippo.config.api_key = "shippo_live_05c8397eb96c1618c677ea52c74cd3f15eafadbf"
             fedex_rates2, other_fedex_rates2,rate_data2 = API2(address_from, address_to, parcel)
 
+            print(other_fedex_rates2)
             data2 = compare_and_choose(other_fedex_rates, other_fedex_rates2)
-
-            # print("____________________________________________")
-            # print(data2)
-
-            return render_template("results.html", rate = rate_data, best_rate = fedex_rates, other_rate =data2)
+         
+            return render_template("result.html", rate = rate_data, best_rate = fedex_rates, other_rate =data2)
         except Exception as e:
             print("hello world")
             print(e)
         
-    return render_template("index.html")
+    return render_template("rates.html")
 
 
 

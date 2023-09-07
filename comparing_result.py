@@ -36,6 +36,4 @@ def compare_and_choose(api1_rates, api2_rates):
         else:
             chosen_rates.append(rate1)
     
-    print("___________________________")
-    print(chosen_rates)
     return chosen_rates
