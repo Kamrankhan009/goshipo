@@ -990,7 +990,7 @@ max-width: 100%;
              </h6>
              <p class="card-text" style="font-size:12; height:70px;">{{rate["duration_terms"]}}</p>        
              <p class="card-text"><strong>Price ${{rate['amount']}}</strong></p>
-             <a href="#" class="btn btn-primary" style="width:100%">Buy now</a>
+             <a href="/payment/{{rate['object_id']}}/{{rate['object_owner']}}/{{rate['amount']}}" class="btn btn-primary" style="width:100%">Buy now</a>
          </div>
      </div>
      </div>
@@ -1013,7 +1013,7 @@ max-width: 100%;
         </h6>
         <p class="card-text" style="font-size:12; height:70px;">{{rate["duration_terms"]}}</p>        
         <p class="card-text"><strong>Price ${{rate['amount']}}</strong></p>
-        <a href="#" class="btn btn-primary" style="width:100%">Buy now</a>
+        <a href="/payment/{{rate['object_id']}}/{{rate['object_owner']}}/{{rate['amount']}}" class="btn btn-primary" style="width:100%">Buy now</a>
     </div>
 </div>
 </div>

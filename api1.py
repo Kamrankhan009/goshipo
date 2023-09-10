@@ -19,7 +19,7 @@ def API1(address_from, address_to, parcel):
     )
         
     new_data = shippo.Shipment.get_rates(shipment.object_id, sync=True)
-            
+
     specified_carrier_account = "609d43244bfe4f90a7021a1945e9a00a"
 
     fedex_rates = []
