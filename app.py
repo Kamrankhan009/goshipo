@@ -37,7 +37,8 @@ from comparing_result import compare_and_choose
 
 
 app = Flask(__name__)
-app.secret_key = "Youwillneverquess"
+app.config['SECRET_KEY'] = "youwillneverguesss"
+# app.secret_key = "Youwillneverquess"
 # run_with_ngrok(app)
 
 
@@ -248,10 +249,16 @@ def buy_label():
             # print(shippo.orders(transaction.object_id))
 
             # download_pdf(new_data.label_url)
-            send_mail(data['email'],new_data.label_url)
+            try:
+                send_mail(data['email'],new_data.label_url)
+            except Exception as e:
+                print(e)
+
+
             session['pdf_link'] = new_data.label_url
+            link = new_data.label_url
             # return redirect(f"/download/{new_data.label_url}")
-            return redirect(url_for('download'))
+            return redirect(url_for('download', link=link))
 
         else:
             
@@ -270,21 +277,24 @@ def order1():
 def download():
     # session['pdf_link'] = pdf_link
     pdf_link = session['pdf_link']
-    return render_template('download.html', link = pdf_link)
+    new_link = request.args.get('link')
+    return render_template('download.html', link = new_link)
 
 
 @app.route("/pdf_download")
 def download_pdf():
-
-    pdf_link = session['pdf_link']
+    # pdf_link = session['pdf_link']
+    pdf_link = request.args.get('link')
     import os
     import requests
-    from flask import Flask, request, send_file
+    from flask import send_file
     # Replace 'your_pdf_link' with the actual link to the PDF file
     # pdf_link = 'https://deliver.goshippo.com/afe952f1cc9e4ee28ba35c1a7bc837ac.pdf?Expires=1725826386&Signature=jQrcfOLDwBsYkdw-NVbN~ppCUIqIx~qm-QjnUnQo1OIqdasLtSf~YklE~tRKsH~lVJ7JIBohaP6k-g99aHY1JszmJMzP1sRa7F4a1GVtk5pDwXc41ecCkLnf1xIG0~7eMDQw98AXbcaemjSJidRT6SpZwnPcnu8HWqhnkgIGJpa45H9rCr4NhFPAbhgUTLBQ~yBfflRF3BYvvwffPmMjgqHwXssfWZbz2MwSQTeAYKDKNaFXVtQAZcmHY1IHoqcvDalygH7UOH1oGazy~wno77YWfbzqOilWmY5LHXdFxXEObqg~NV~RZjZpOMpzetbBsOwKXre0StylLeI~V4c8Cw__&Key-Pair-Id=APKAJRICFXQ2S4YUQRSQ'
 
     # Use the requests library to fetch the PDF file
+    print(pdf_link)
     response = requests.get(pdf_link)
+
 
     if response.status_code == 200:
         # Define the filename for the downloaded PDF

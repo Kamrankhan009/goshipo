@@ -21,7 +21,7 @@
     <div class="container centered">
         <h1>Download Your File</h1>
         <p>Click the button below to download your file.</p>
-        <a href="/pdf_download" class="btn btn-primary btn-lg">Download</a>
+        <a href="{{ url_for('download_pdf', link=link) }}" class="btn btn-primary btn-lg">Download</a>
     </div>
 
     <!-- Include Bootstrap JS (optional) -->
