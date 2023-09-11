@@ -470,10 +470,16 @@ m3716 -217 c12 -89 8 -377 -5 -483 -83 -639 -386 -989 -922 -1065 -101 -14
     
     <a href="#" class="navbar_link w-nav-link"></a></div>
     
-    
-    <div class="navbar_menu-buttons"><a href="#" class="navbar_link w-nav-link">Login</a>
+    {%if not current_user.is_authenticated%}
+    <div class="navbar_menu-buttons"><a href="/login" class="navbar_link w-nav-link">Login</a>
       
-    <a href="#" class="button is-secondary w-button">Create a FREE account</a>
+    
+    <a href="/register" class="button is-secondary w-button">Create a FREE account</a>
+    {%else%}
+    <a href="/logout" class="button is-secondary w-button">Logout</a>
+
+    {%endif%}
+
     </div></nav>
     
 

@@ -18,11 +18,40 @@
     </style>
 </head>
 <body>
-    <div class="container centered">
-        <h1>Download Your File</h1>
-        <p>Click the button below to download your file.</p>
-        <a href="{{ url_for('download_pdf', link=link) }}" class="btn btn-primary btn-lg">Download</a>
-    </div>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
+        <div class="container mt-5">
+            <h1>Download list</h1>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {%for order in order%}
+                    <tr>
+                        <td>{{order.id}}</td>
+                        <td>label.pdf</td>
+                        <td><a href="pdf_download/{{order.id}}"><button class="btn btn-primary">Download</button></a></td>
+                      
+                    </tr>
+                    {%endfor%}
+                   
+                    <!-- Add more rows for your orders here -->
+                </tbody>
+            </table>
+        </div>
+    
+      
+    
 
     <!-- Include Bootstrap JS (optional) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

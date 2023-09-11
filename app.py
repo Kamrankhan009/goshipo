@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, jsonify, flash, session, redirect, url_for
 from flask_mail import Mail, Message
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_migrate import Migrate
 
 import requests
 import stripe
@@ -34,14 +37,44 @@ shippo.config.api_key = api_key
 from api1 import API1
 from api2 import API2
 from comparing_result import compare_and_choose
-
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "youwillneverguesss"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///testing.sqlite'  # SQLite for simplicity, use a proper DB in production
+db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 # app.secret_key = "Youwillneverquess"
 # run_with_ngrok(app)
 
 
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String)
+    email = db.Column(db.String)
+    password = db.Column(db.String)
+    is_active = db.Column(db.Boolean, default = True)
+
+
+class Orders(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, nullable = False)
+    download_link = db.Column(db.Text)
+    payment_amount = db.Column(db.String)
+    payment_status = db.Column(db.String)
+    object_id = db.Column(db.Text)
+    owner = db.Column(db.String)
+    email = db.Column(db.String)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+
+
+@login_manager.user_loader
+def user_loader(user_id):
+    return User.query.get(user_id)
+
+Migrate(app, db)
 app_password = "rdixjldwxbgkidhz"
 email = "kamrankhan567855@gmail.com"
 app.config['MAIL_SERVER']='smtp.gmail.com'
@@ -57,6 +90,9 @@ mail = Mail(app)
 payment_info = {}
 
 
+
+
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
@@ -65,6 +101,7 @@ def page_not_found(error):
 @app.errorhandler(500)
 def internal_server_error(error):
     return render_template('500.html'), 500
+
 
 def get_carrier_object_id():
     headers = {
@@ -82,6 +119,48 @@ def get_carrier_object_id():
                     valid_carrier_account_id = value['object_id']
 
     return valid_carrier_account_id
+
+
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect("/")
+
+# Create a route for the login page
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(email=username).first()
+        if user and user.password == password:
+            login_user(user)
+            flash('Logged in successfully!', 'success')
+            return redirect(url_for('calculate'))
+        else:
+            flash('Login failed. Check your username and password.', 'danger')
+    return render_template('login.html')
+
+
+
+# Define a route for the registration page
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form['name']
+        username = request.form['username']
+        password = request.form['password']
+
+        user = User(name=name, email=username, password=password)
+        db.session.add(user)
+        db.session.commit()
+
+        flash('Registration successful! You can now log in.', 'success')
+        return redirect(url_for('login'))
+    return render_template('register.html')
+
+
 
 @app.route('/')
 @app.route("/calculate", methods = ['POST','GET'])
@@ -183,6 +262,7 @@ def payment(object_id, owner, amount):
 
 
 @app.route('/charge', methods=['POST'])
+@login_required
 def charge():
     if request.method == 'POST':
         # amount = 1000  # Replace with the desired amount in cents
@@ -204,6 +284,17 @@ def charge():
          
 
             # session['Label']
+            order = Orders(
+                user_id = current_user.id,
+                payment_amount = amount,
+                payment_status = payment_intent.status,
+                object_id = object_id,
+                owner = owner,
+                email = email
+            )
+
+            db.session.add(order)
+            db.session.commit()
             payment_info['payment_intent_id'] = payment_intent.id
             payment_info['payment_amount'] = amount
             payment_info['payment_status'] = payment_intent.status
@@ -215,13 +306,14 @@ def charge():
             return payment_intent.client_secret
             
         except Exception as e:
-        
+            print(e)
             return jsonify(error=str(e)), 500
         
 
 
 
 @app.route("/success")
+@login_required
 def buy_label():
     try:
         if not session['Label']:
@@ -245,20 +337,27 @@ def buy_label():
         if transaction.status == "SUCCESS" or transaction.object_state== "VALID":
             new_data = shippo.Transaction.retrieve(transaction.object_id)
             print("________________________llllllllllllllllllllll")
-            print(new_data.label_url)
+            link = new_data.label_url
             # print(shippo.orders(transaction.object_id))
 
             # download_pdf(new_data.label_url)
+            print("herrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+            try:
+                order = Orders.query.filter_by(user_id=current_user.id).order_by(Orders.timestamp.desc()).first()
+
+                order.download_link = link
+                db.session.commit()
+            except Exception as e:
+                print(e)
+            print("___________________________finished_______________--")
             try:
                 send_mail(data['email'],new_data.label_url)
             except Exception as e:
                 print(e)
+            
+          
 
-
-            session['pdf_link'] = new_data.label_url
-            link = new_data.label_url
-            # return redirect(f"/download/{new_data.label_url}")
-            return redirect(url_for('download', link=link))
+            return redirect(url_for('download'))
 
         else:
             
@@ -274,17 +373,19 @@ def order1():
 
 
 @app.route("/download")
+@login_required
 def download():
-    # session['pdf_link'] = pdf_link
-    pdf_link = session['pdf_link']
-    new_link = request.args.get('link')
-    return render_template('download.html', link = new_link)
+    order = Orders.query.filter_by(user_id = current_user.id).all()
+    return render_template('download.html', order = order)
 
 
-@app.route("/pdf_download")
-def download_pdf():
+@app.route("/pdf_download/<id>")
+@login_required
+def download_pdf(id):
     # pdf_link = session['pdf_link']
-    pdf_link = request.args.get('link')
+
+    data = Orders.query.filter_by(id=id).first()
+    pdf_link = data.download_link
     import os
     import requests
     from flask import send_file
