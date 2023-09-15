@@ -394,17 +394,38 @@ body
             /* box-shadsow: 0px 4px 6px rgba(0, 0, 0, 0.1); */
         }
   </style> 
-  <h1 id="h11">hello world </h1>
+ 
+</div>
+<div class="nav_logo w-embed">
+  
+  <img src="{{url_for("static", filename="logo.jpg")}}"  alt="" class=""/>
+
 </div>
 <img src="" loading="lazy" alt="" class="nav_brandmark-mobile"/></a><nav role="navigation" class="navbar_menu is-page-height-tablet is-white w-nav-menu">
   <div class="navbar_links-wrapper">
+    <a href="#" aria-current="page" class="navbar_link w-nav-link w--current">Rates</a>
     
-   
     
-    <div class="navbar_menu-buttons"><a href="#" class="navbar_link w-nav-link">Login</a>
+    <a href="/profile" class="navbar_link w-nav-link">Profile</a>
+    
+    
+    <a href="#" class="navbar_link w-nav-link"></a></div>
+    
+    {%if not current_user.is_authenticated%}
+    <div class="navbar_menu-buttons"><a href="/login" class="navbar_link w-nav-link">Login</a>
       
-    <a href="#" class="button is-secondary w-button">Create a FREE account</a>
-    </div></nav>
+    
+    <a href="/register" class="button is-secondary w-button">Create a FREE account</a>
+    {%else%}
+    <a href="/logout" class="button is-secondary w-button">Logout</a>
+    
+
+    {%endif%}
+    </div>
+    
+    
+    
+    </nav>
     
 
      

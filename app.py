@@ -25,7 +25,11 @@ payments = False
 #ladha
 # api_key = "shippo_live_05c8397eb96c1618c677ea52c74cd3f15eafadbf" 
 #ladha test
-api_key = "shippo_test_effec733b0707aa4561e174fa72fda07e8c39fd6"
+# api_key = "shippo_test_effec733b0707aa4561e174fa72fda07e8c39fd6"
+
+#themaitham test
+api_key = "shippo_test_cba653fa4b9033df466bccb48c9eadaf7966f85b"
+
 
 # shippo.api_key = api_key
 shippo.config.api_key = api_key
@@ -257,6 +261,7 @@ def calculate():
 
 
 @app.route("/payment/<object_id>/<owner>/<amount>")
+@login_required
 def payment(object_id, owner, amount):
     return render_template("payment.html", object_id = object_id, owner=owner, amount = amount)
 
@@ -292,7 +297,6 @@ def charge():
                 owner = owner,
                 email = email
             )
-
             db.session.add(order)
             db.session.commit()
             payment_info['payment_intent_id'] = payment_intent.id
@@ -302,7 +306,6 @@ def charge():
             payment_info['owner'] = owner
             payment_info['email'] = email
             session['Label'] = payment_info
-
             return payment_intent.client_secret
             
         except Exception as e:
@@ -310,17 +313,13 @@ def charge():
             return jsonify(error=str(e)), 500
         
 
-
-
 @app.route("/success")
 @login_required
 def buy_label():
     try:
         if not session['Label']:
             return redirect("/")
-        
         data = session['Label']
-
         if data['owner'] == "tahirladha03@gmail.com":
             # shippo.config.api_key = "shippo_live_05c8397eb96c1618c677ea52c74cd3f15eafadbf"
             shippo.config.api_key = "shippo_test_effec733b0707aa4561e174fa72fda07e8c39fd6"
@@ -354,9 +353,6 @@ def buy_label():
                 send_mail(data['email'],new_data.label_url)
             except Exception as e:
                 print(e)
-            
-          
-
             return redirect(url_for('download'))
 
         else:
@@ -372,7 +368,7 @@ def order1():
     return shippo.Transaction.retrieve("afe952f1cc9e4ee28ba35c1a7bc837ac")
 
 
-@app.route("/download")
+@app.route("/profile")
 @login_required
 def download():
     order = Orders.query.filter_by(user_id = current_user.id).all()
@@ -411,7 +407,6 @@ def download_pdf(id):
         return 'Failed to download the PDF', 404
 
 
-
 def send_mail(recipients, pdf_link):
     print(recipients)
     msg = Message('Hello from the other side!',
@@ -429,6 +424,68 @@ def send_mail(recipients, pdf_link):
     mail.send(msg)
     return "Message sent!"
  
+
+
+@app.route('/process_csv', methods=['POST'])
+def process_csv():
+    # Check if a CSV file is uploaded
+    if 'csv_file' not in request.files:
+        return "No CSV file provided", 400
+    
+    csv_file = request.files['csv_file']
+    
+    # Check if the file has a CSV extension
+    if not csv_file.filename.endswith('.csv'):
+        return "File is not a CSV", 400
+
+    # Parse the CSV file
+    csv_data = []
+    for line in csv_file.readlines():
+        line = line.decode().strip()
+        if line:  # Ignore empty lines
+            row = line.split(',')
+            csv_data.append(row)
+
+    # Assuming that the CSV file has a specific structure (as mentioned in your example),
+    # extract the relevant data.
+
+    print(csv_data)
+    address_from = csv_data[1][0]  # Change the row/column index as needed
+    
+    
+    zip_from = csv_data[1][3]
+    state_from = csv_data[1][2]
+    address_to = csv_data[1][5]  # Change the row/column index as needed
+
+    city_from = csv_data[1][1]
+    city_to = csv_data[1][6]
+
+    country_from = csv_data[1][4]
+    country_to = csv_data[1][9]
+
+    zip_to = csv_data[1][8]
+    state_to = csv_data[1][7]
+
+    # You can now use the extracted data as needed
+    # For example, you can return it as a JSON response
+    response_data = {
+        "Address From": address_from,
+        "ZIP From": zip_from,
+        "State From": state_from,
+        "Address To": address_to,
+        "ZIP To": zip_to,
+        "State To": state_to,
+        "city from": city_from,
+        "city to": city_to,
+        "country from": country_from,
+        "country to": country_to
+    }
+
+    return render_template('rates.html', address_from = address_from, address_to = address_to, zip_from=zip_from, zip_to=zip_to,
+                           state_from = state_from, state_to= state_to,
+                           city_from= city_from, city_to=city_to, country_from=country_from, country_to=country_to, 
+                           name_from = "testing", name_to="testing2",
+                           csv_data = True)
 
 if __name__ == "__main__":
     app.run(debug=True)
