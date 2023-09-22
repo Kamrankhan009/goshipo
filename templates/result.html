@@ -5,6 +5,7 @@
   
   <link href="https://fonts.googleapis.com" rel="preconnect"/><link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous"/>
   
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
   
   <script type="text/javascript">WebFont.load({  google: {    families: ["Comic Neue:regular"]  }});</script>
@@ -17,6 +18,10 @@
 <style>.async-hide { opacity: 0 !important} </style>
 
 <style>
+    body {
+  font-family: 'Roboto', sans-serif !important;
+  color: #333; /* Replace with your desired text color */
+}
 .cc-revoke.cc-top {
   left: 60%;
   margin-left: -4em;
@@ -394,11 +399,24 @@ body
             /* box-shadsow: 0px 4px 6px rgba(0, 0, 0, 0.1); */
         }
   </style> 
+
+  <style>
+    .button:hover{
+      
+      background-color: green !important;
+      color:white !important;
+    }
+
+    a:hover{
+      text-decoration: none;
+      color: green !important;
+    }
+    </style>
  
 </div>
 <div class="nav_logo w-embed">
   
-  <img src="{{url_for("static", filename="logo.jpg")}}"  alt="" class=""/>
+  <img src="{{url_for("static", filename="BigShipDirect-logos_black.png")}}"  alt="" class=""/>
 
 </div>
 <img src="" loading="lazy" alt="" class="nav_brandmark-mobile"/></a><nav role="navigation" class="navbar_menu is-page-height-tablet is-white w-nav-menu">
@@ -415,7 +433,8 @@ body
     <div class="navbar_menu-buttons"><a href="/login" class="navbar_link w-nav-link">Login</a>
       
     
-    <a href="/register" class="button is-secondary w-button">Create a FREE account</a>
+    <a href="/register" class="button is-secondary" style="border-radius: 0 !important; border-color: #30b300 !important; color: #2ca200 !important;">Sign up free</a>
+    
     {%else%}
     <a href="/logout" class="button is-secondary w-button">Logout</a>
     
@@ -554,15 +573,41 @@ body
     <div class="rates-header_component">
     <div class="max-width-large">
     <div class="rates-header_content">
-    <h1>Save up to 89% off USPS® and UPS® shipping rates <span class="yellow-highlight_span">for free</span></h1>
+      <h1>Save 90%+ OFF Fedex, USPS, and
+UPS. <span class="" style="background-color:  #3E7328; color: white;">No sign up required.</span></h1>
     <div class="padding-bottom padding-small p-32"></div>
     <div class="max-width-medium">
-    <p class="text-size-regular">Pirate Ship offers instant access to pre-negotiated UPS and USPS discounts with no monthly fees, hidden costs, minimum volumes or commitments of any kind. These discounts can 
-    <strong>save you up to 89%</strong> compared to standard shipping rates.</p></div>
+      <p class="text-size-regular">Unlock the best shipping rates tailored for you! Our easy-to-use platform provides instant rate comparisons from top carriers, ensuring you find the most affordable and efficient option for your needs. Whether you're shipping across the town or across the globe, we've got you covered. Simply enter your package details, compare rates, and purchase with confidence. Happy shipping!</p></div>
     <div class="padding-bottom padding-small"></div>
-    <div class="text-size-medium text-weight-medium hide-tablet rates">See how much you could save 👉
+    <div class="text-size-medium text-weight-medium hide-tablet rates">Check rates now 👉
+    </span></div>
+    
+    <br><br><br><br>
+    <div class="hide-tablet rates" style="color:red"><a href="/register">Or create a free account to manage your buld shipment 👈 </a>
     <span class="text-span-2"> 
-    </span></div><div class="text-weight-medium is-mobile">See how much you could save 👇<span class="text-span-2"> </span></div></div></div>
+    </span></div>
+    
+    <div class="text-weight-medium is-mobile">Check rates now 👇<span
+      
+      class="text-span-2"> </span>
+      
+    
+      
+      </div>
+      
+      
+      
+      <div class="text-weight-medium is-mobile" style="color:red"><a href="/register">Or create a free account to manage your buld shipment 👈</a> <span class="text-span-2">
+      
+       
+    </span>
+    
+
+
+    </div>
+      
+      </div></div>
+    
     <div id="w-node-_59d14b0c-edbd-4fa6-658b-f63386a2ba22-a54ca3ff" class="rates-header_calculator-wrapper relative">
   
       <div class=" ">
@@ -570,7 +615,7 @@ body
   
       <form method="post" action="/calculate">
       <div class="form-container">
-        <label>From <span style="color: rgb(180, 178, 178);">(USA only)</span></label>
+        <label>From <span style="color: rgb(180, 178, 178);"></span></label>
         
         <div class="row">
         <div class="col-md-12">
@@ -636,7 +681,7 @@ body
         </div>
         
         <br>
-        <label>To <span style="color: rgb(172, 170, 170);">(USA only)</span></label>
+        <label>To <span style="color: rgb(172, 170, 170);"></span></label>
        
         <div class="row">
         <div class="col-md-12">
@@ -780,7 +825,7 @@ body
        
       <div class="row">
         <div class="col-md-12">
-          <button type="submit" class="btn btn-primary" style="width:100%;">Submit</button  
+          <button type="submit" class="btn btn-success" style="width:100%;">Submit</button  
         </div>
       </div>
 
@@ -1011,7 +1056,7 @@ max-width: 100%;
              </h6>
              <p class="card-text" style="font-size:12; height:70px;">{{rate["duration_terms"]}}</p>        
              <p class="card-text"><strong>Price ${{rate['amount']}}</strong></p>
-             <a href="/payment/{{rate['object_id']}}/{{rate['object_owner']}}/{{rate['amount']}}" class="btn btn-primary" style="width:100%">Buy now</a>
+             <a href="/payment/{{rate['object_id']}}/{{rate['object_owner']}}/{{rate['amount']}}" class="btn btn-success" style="width:100%">Buy now</a>
          </div>
      </div>
      </div>
@@ -1034,7 +1079,7 @@ max-width: 100%;
         </h6>
         <p class="card-text" style="font-size:12; height:70px;">{{rate["duration_terms"]}}</p>        
         <p class="card-text"><strong>Price ${{rate['amount']}}</strong></p>
-        <a href="/payment/{{rate['object_id']}}/{{rate['object_owner']}}/{{rate['amount']}}" class="btn btn-primary" style="width:100%">Buy now</a>
+        <a href="/payment/{{rate['object_id']}}/{{rate['object_owner']}}/{{rate['amount']}}" class="btn btn-success" style="width:100%">Buy now</a>
     </div>
 </div>
 </div>
@@ -1055,7 +1100,156 @@ max-width: 100%;
 
 <div class="">
   <div class=""><div class="c"><div class=""></div><div class="footer_component">
-<div class="padding-128px"></div></div></div></div><script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=6373a03c7d7cb73ba2df4f8e" type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous">
+<div class="padding-128px"></div>
+
+<!-- Remove the container if you want to extend the Footer to full width. -->
+<div class="">
+  <!-- Footer -->
+  <footer
+          class="text-center text-lg-start text-white"
+          style="background-color: #45526e"
+          >
+    <!-- Grid container -->
+    <div class="container p-4 pb-0">
+      <!-- Section: Links -->
+      <section class="">
+        <!--Grid row-->
+        <div class="row">
+          <!-- Grid column -->
+          <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+            <h6 class="text-uppercase mb-4 font-weight-bold">
+              Company name
+            </h6>
+            <p>
+              description about company
+            </p>
+          </div>
+          <!-- Grid column -->
+
+          <hr class="w-100 clearfix d-md-none" />
+
+          <!-- Grid column -->
+          <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+            <h6 class="text-uppercase mb-4 font-weight-bold">Products</h6>
+            <p>
+              <a class="text-white">Link 1</a>
+            </p>
+            <p>
+              <a class="text-white">link 2</a>
+            </p>
+            <p>
+              <a class="text-white">link 3</a>
+            </p>
+            <p>
+              <a class="text-white">link 4</a>
+            </p>
+          </div>
+          <!-- Grid column -->
+
+          <hr class="w-100 clearfix d-md-none" />
+
+          <!-- Grid column -->
+          <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+            <h6 class="text-uppercase mb-4 font-weight-bold">
+              Useful links
+            </h6>
+            <p>
+              <a class="text-white">Your Account</a>
+            </p>
+            <p>
+              <a class="text-white">Become an Affiliate</a>
+            </p>
+            <p>
+              <a class="text-white">Shipping Rates</a>
+            </p>
+            <p>
+              <a class="text-white">Help</a>
+            </p>
+          </div>
+
+          <!-- Grid column -->
+          <hr class="w-100 clearfix d-md-none" />
+
+          <!-- Grid column -->
+          <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+            <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
+            <p><i class="fas fa-home mr-3"></i> New York, NY 10012, US</p>
+            <p><i class="fas fa-envelope mr-3"></i> info@gmail.com</p>
+            <p><i class="fas fa-phone mr-3"></i> + 01 234 567 88</p>
+            <p><i class="fas fa-print mr-3"></i> + 01 234 567 89</p>
+          </div>
+          <!-- Grid column -->
+        </div>
+        <!--Grid row-->
+      </section>
+      <!-- Section: Links -->
+
+      <hr class="my-3">
+
+      <!-- Section: Copyright -->
+      <section class="p-3 pt-0">
+        <div class="row d-flex align-items-center">
+          <!-- Grid column -->
+          <div class="col-md-7 col-lg-8 text-center text-md-start">
+            <!-- Copyright -->
+            <div class="p-3">
+              © 2023 Copyright:
+              <a class="text-white" href=""
+                 >BigShipDirect</a
+                >
+            </div>
+            <!-- Copyright -->
+          </div>
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <div class="col-md-5 col-lg-4 ml-lg-0 text-center text-md-end">
+            <!-- Facebook -->
+            <a
+               class="btn btn-outline-light btn-floating m-1"
+               class="text-white"
+               role="button"
+               ><i class="fab fa-facebook-f"></i
+              ></a>
+
+            <!-- Twitter -->
+            <a
+               class="btn btn-outline-light btn-floating m-1"
+               class="text-white"
+               role="button"
+               ><i class="fab fa-twitter"></i
+              ></a>
+
+            <!-- Google -->
+            <a
+               class="btn btn-outline-light btn-floating m-1"
+               class="text-white"
+               role="button"
+               ><i class="fab fa-google"></i
+              ></a>
+
+            <!-- Instagram -->
+            <a
+               class="btn btn-outline-light btn-floating m-1"
+               class="text-white"
+               role="button"
+               ><i class="fab fa-instagram"></i
+              ></a>
+          </div>
+          <!-- Grid column -->
+        </div>
+      </section>
+      <!-- Section: Copyright -->
+    </div>
+    <!-- Grid container -->
+  </footer>
+  <!-- Footer -->
+</div>
+<!-- End of .container -->
+
+
+
+</div></div></div><script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=6373a03c7d7cb73ba2df4f8e" type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous">
 </script>
 
 <script src="{{url_for('static', filename='rates.js')}}" type="text/javascript"></script>

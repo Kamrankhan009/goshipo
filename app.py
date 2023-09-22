@@ -170,8 +170,7 @@ def register():
 @app.route("/calculate", methods = ['POST','GET'])
 def calculate():
     if request.method == "POST":
-
-      
+        print(request.form)
         addressFrom = request.form.get('address')
         namefrom = request.form.get('name')
         zipfrom = request.form.get('addressToZip')
@@ -229,6 +228,10 @@ def calculate():
             }
 
 
+
+            print(address_from)
+            print(address_to)
+            print(parcel)
 
             headers = {
                 "Authorization": f"ShippoToken ",
@@ -371,8 +374,8 @@ def order1():
 @app.route("/profile")
 @login_required
 def download():
-    order = Orders.query.filter_by(user_id = current_user.id).all()
-    return render_template('download.html', order = order)
+    
+    return render_template('profile.html')
 
 
 @app.route("/pdf_download/<id>")
@@ -486,6 +489,26 @@ def process_csv():
                            city_from= city_from, city_to=city_to, country_from=country_from, country_to=country_to, 
                            name_from = "testing", name_to="testing2",
                            csv_data = True)
+    
 
+
+@app.route("/FAQ")
+def FAQ():
+    return render_template('faq.html')    
+
+
+@app.route('/support')
+def customer_support():
+    return render_template("support.html")
+
+
+@app.route('/order_label')
+def order_label():
+    order = Orders.query.filter_by(user_id = current_user.id).all()
+    return render_template("download.html", order = order)
+
+@app.route("/connection")
+def connection():
+    return render_template("connect_with.html")
 if __name__ == "__main__":
     app.run(debug=True)
