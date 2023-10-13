@@ -11,12 +11,17 @@ import shippo
 # shippo.config.api_key = api_key
 
 def API1(address_from, address_to, parcel):
-             
-    shipment = shippo.Shipment.create(
-    address_from = address_from,
-    address_to = address_to,
-    parcels = [parcel]
-    )
+    print("you are here___________--")
+    try:
+        shipment = shippo.Shipment.create(
+        address_from = address_from,
+        address_to = address_to,
+        parcels = [parcel]
+        )
+    except Exception as e:
+        print(e)
+    
+    print("you are here2 -------------------")
         
     new_data = shippo.Shipment.get_rates(shipment.object_id, sync=True)
 

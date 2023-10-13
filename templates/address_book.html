@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    {% for address in address %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Address From</h5>
+                    <span class="card-text">{{ address.address }}</span>
+                    <span class="card-text">City: {{ address.city }}</span>
+                    <span class="card-text">State: {{ address.state }}</span>
+                    <span class="card-text">Zip Code: {{ address.zip_code }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Address To</h5>
+                    <span class="card-text">{{ address.address2 }}</span>
+                    <span class "card-text">City: {{ address.city2 }}</span>
+                    <span class="card-text">State: {{ address.state2 }}</span>
+                    <span class="card-text">Zip Code: {{ address.zip_code2 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-right">
+       <a href="/check-rates/{{address.id}}"> <button class="btn btn-danger">Use</button></a>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .row {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .card {
+        flex: 1;
+        margin: 5px;
+    }
+</style>
+
+{% endblock %}

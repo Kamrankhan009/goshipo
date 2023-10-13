@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Search</title>
+
+    <style>
+        /* Basic styles for search results */
+        #searchResults {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        #searchResults li {
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #searchResults li:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Input field styles */
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>`
+</head>
+<body>
+    <form id="locationForm">
+        <input type="text" id="locationInput" placeholder="Enter a location">
+        <ul id="searchResults"></ul>
+        <input type="text" id="countryInput" placeholder="Country" disabled>
+        <input type="text" id="postcodeInput" placeholder="Postcode" disabled>
+        <input type="text" id="stateInput" placeholder="State" disabled>
+    </form>
+
+    <script>
+        const apiKey = '42af86479ba04af69c0f993b9568f130'; // Replace with your API key
+        const locationInput = document.getElementById('locationInput');
+        const searchResults = document.getElementById('searchResults');
+        const countryInput = document.getElementById('countryInput');
+        const postcodeInput = document.getElementById('postcodeInput');
+        const stateInput = document.getElementById('stateInput');
+
+        // Function to fetch location data based on user input
+        const fetchLocationData = (searchText) => {
+            fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${searchText}&apiKey=${apiKey}`)
+                .then(response => response.json())
+                .then(result => displaySearchResults(result.features))
+                .catch(error => console.error('Error', error));
+        };
+
+        // Function to display search results
+        const displaySearchResults = (results) => {
+            searchResults.innerHTML = '';
+            results.forEach(result => {
+                const listItem = document.createElement('li');
+                listItem.textContent = result.properties.formatted;
+                listItem.addEventListener('click', () => {
+                    // Populate input fields when a result is selected
+                    countryInput.value = result.properties.country;
+                    postcodeInput.value = result.properties.postcode;
+                    stateInput.value = result.properties.state;
+                    searchResults.innerHTML = '';
+                });
+                searchResults.appendChild(listItem);
+            });
+        };
+
+        // Event listener for input changes
+        locationInput.addEventListener('input', () => {
+            const searchText = locationInput.value;
+            if (searchText.length >= 3) {
+                fetchLocationData(searchText);
+            } else {
+                searchResults.innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html>

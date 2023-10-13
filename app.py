@@ -59,7 +59,25 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String)
     password = db.Column(db.String)
     is_active = db.Column(db.Boolean, default = True)
+    
 
+class Address_book(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(255))
+    address = db.Column(db.Text)
+    city = db.Column(db.String(255))
+    country = db.Column(db.String(255))
+    state = db.Column(db.String(255))
+    zip_code = db.Column(db.String(255))
+    name2 = db.Column(db.String(255))
+    address2 = db.Column(db.Text)
+    city2 = db.Column(db.String(255))
+    country2 = db.Column(db.String(255))
+    state2 = db.Column(db.String(255))
+    zip_code2 = db.Column(db.String(255))
+    
+    
 
 class Orders(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -178,7 +196,6 @@ def calculate():
         statefrom = request.form.get('state')
         countryfrom = request.form.get('country')
 
-
         addressto = request.form.get('address2')
         nameto = request.form.get('name2')
         zipto = request.form.get('addressToZip2')
@@ -197,6 +214,57 @@ def calculate():
         weight = request.form.get('weight')
         weight_unit = request.form.get('weight-unit')
         
+        
+        # name,address,city,country,state,zip_code
+        if current_user.is_authenticated:
+        # Check if a similar address entry already exists
+            existing_entry = Address_book.query.filter(
+            Address_book.name == namefrom,
+            Address_book.address == addressFrom,
+            Address_book.city == cityfrom,
+            Address_book.country == countryfrom,
+            Address_book.state == statefrom,
+            Address_book.zip_code == zipfrom,
+            Address_book.name2 == nameto,
+            Address_book.address2 == addressto,
+            Address_book.country2 == countryto,
+            Address_book.city2 == cityto,
+            Address_book.state2 == stateto,
+            Address_book.zip_code2 == zipto,
+            Address_book.user_id == current_user.id
+            ).first()
+
+            if existing_entry:
+                print("done")
+            else:
+                # Create a new address entry
+                address = Address_book(
+                    name=namefrom,
+                    address=addressFrom,
+                    city=cityfrom,
+                    country=countryfrom,
+                    state=statefrom,
+                    zip_code=zipfrom,
+                    name2=nameto,
+                    address2=addressto,
+                    country2=countryto,
+                    city2=cityto,
+                    state2=stateto,
+                    zip_code2=zipto,
+                    user_id=current_user.id
+                )
+                db.session.add(address)
+                db.session.commit()
+        else:
+            pass
+
+
+
+
+
+
+
+        
         try:
             address_from={
             "name": namefrom, #"John Smith",
@@ -204,7 +272,7 @@ def calculate():
             "city": cityfrom,#"San Francisco",
             "state": statefrom,#"CA",
             "zip":  zipfrom,#"94111",
-            "country":"USA", #"US",
+            "country":countryfrom, #"US",
             "phone": "",
             "email": "",
             }
@@ -214,7 +282,7 @@ def calculate():
                 "city": cityto,#"Los Angeles",
                 "state": stateto,#"CA",
                 "zip": zipto,#"90001",
-                "country": "USA", #"US",
+                "country": countryto, #"US",
                 "phone": "",
                 "email": "",
             }
@@ -246,6 +314,7 @@ def calculate():
       
 
             fedex_rates, other_fedex_rates,rate_data = API1(address_from, address_to, parcel)
+            print(other_fedex_rates)
             # print(other_fedex_rates)
             # shippo.config.api_key = "shippo_live_05c8397eb96c1618c677ea52c74cd3f15eafadbf"
             shippo.config.api_key = "shippo_test_effec733b0707aa4561e174fa72fda07e8c39fd6"
@@ -253,7 +322,9 @@ def calculate():
 
             # print(other_fedex_rates2)
             data2 = compare_and_choose(other_fedex_rates, other_fedex_rates2)
-         
+            print("________________________________________")
+            print(data2)         
+            print("__________________________________________")
             return render_template("result.html", rate = rate_data, best_rate = fedex_rates, other_rate =data2)
         except Exception as e:
             pass
@@ -261,6 +332,14 @@ def calculate():
     return render_template("rates.html")
 
 
+
+@app.route('/check-rates/<id>')
+@login_required
+def check_rates(id):
+    address = Address_book.query.get(id)
+    print(address.zip_code)
+    return render_template('rates.html', address=address)
+    
 
 
 @app.route("/payment/<object_id>/<owner>/<amount>")
@@ -377,6 +456,11 @@ def download():
     
     return render_template('profile.html')
 
+@app.route('/address_book')
+@login_required
+def address_book():
+    address = Address_book.query.filter_by(user_id = current_user.id).all()
+    return render_template("address_book.html", address = address)
 
 @app.route("/pdf_download/<id>")
 @login_required
